@@ -21,7 +21,18 @@ function resolveSecret() {
     return process.env.JWT_SECRET;
   }
   // Generate once and persist next to the DB, so restarts don't log everyone out.
-  const dir = process.env.DATA_DIR || path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+  // Mirror db.js: if DATA_DIR isn't writable (e.g. /data not mounted on Render),
+  // fall back to the server dir instead of losing the secret every restart.
+  const fallbackDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+  let dir = process.env.DATA_DIR || fallbackDir;
+  if (process.env.DATA_DIR) {
+    try {
+      fs.mkdirSync(dir, { recursive: true });
+      fs.accessSync(dir, fs.constants.W_OK);
+    } catch {
+      dir = fallbackDir;
+    }
+  }
   const file = path.join(dir, '.jwt_secret');
   try {
     return fs.readFileSync(file, 'utf8').trim();

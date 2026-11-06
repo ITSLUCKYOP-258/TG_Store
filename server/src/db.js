@@ -4,10 +4,32 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dataDir = process.env.DATA_DIR || path.join(__dirname, '..');
-if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true });
+
+/**
+ * Resolve a writable DATA_DIR. On Render, `/data` only exists when a
+ * persistent disk is attached — otherwise mkdir throws EACCES and the
+ * whole process crash-loops. Fall back to the server dir instead of dying
+ * so the app at least becomes healthy (with a loud warning that data
+ * will be ephemeral until the disk is mounted).
+ */
+function resolveDataDir() {
+  const wanted = process.env.DATA_DIR;
+  const fallback = path.join(__dirname, '..');
+  if (!wanted) return fallback;
+  try {
+    fs.mkdirSync(wanted, { recursive: true });
+    fs.accessSync(wanted, fs.constants.W_OK);
+    return wanted;
+  } catch (err) {
+    console.error(
+      `[db] DATA_DIR "${wanted}" is not writable (${err.code || err.message}). ` +
+        `Falling back to "${fallback}". Attach a persistent disk at ${wanted} in Render ` +
+        `or set DATA_DIR to a writable path — DB will be wiped on redeploy until then.`
+    );
+    return fallback;
+  }
 }
+const dataDir = resolveDataDir();
 const db = new Database(path.join(dataDir, 'tgstore.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
