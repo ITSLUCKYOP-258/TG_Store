@@ -1,0 +1,30 @@
+﻿# fly.toml -- Fly.io deployment config for TGStore
+# Docs: https://fly.io/docs/reference/configuration/
+
+app = "tgstore"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  NODE_ENV = "production"
+  DATA_DIR  = "/data"
+  DEV_LOGIN = "false"
+  PORT      = "8787"
+
+# Persistent volume -- SQLite DB + config.json survive redeploys
+[[mounts]]
+  source      = "tgstore_data"
+  destination = "/data"
+
+[http_service]
+  internal_port       = 8787
+  force_https         = true
+  auto_stop_machines  = false
+  min_machines_running = 1
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus     = 1
+  memory   = "256mb"

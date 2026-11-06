@@ -1,0 +1,21 @@
+node_modules
+dist
+.env
+config.json
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Sensitive / local-only files
+cookies.txt
+mt_cookies.txt
+phone.json
+cat.json
+
+# Logs
+server.log
+server.err
+test_output.log
+*.log
+

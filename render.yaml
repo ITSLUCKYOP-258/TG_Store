@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: tgstore
+    runtime: node
+    region: singapore
+    plan: starter # $7/mo — persistent disk requires Starter (Free loses SQLite on restart)
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    disk:
+      name: tgstore-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATA_DIR
+        value: /data
+      - key: DEV_LOGIN
+        value: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: BOT_USERNAME
+        sync: false
+      - key: STORAGE_CHANNEL_ID
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_KEY
+        sync: false
+      - key: MT_API_ID
+        sync: false
+      - key: MT_API_HASH
+        sync: false
+      - key: PUBLIC_BASE_URL
+        sync: false

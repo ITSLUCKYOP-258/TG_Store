@@ -1,0 +1,67 @@
+@import 'tailwindcss';
+
+/* Follow the OS light/dark preference (no manual toggle needed). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  /* Prevent iOS double-tap zoom on buttons/links */
+  touch-action: manipulation;
+  /* Remove grey tap flash on mobile */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent pull-to-refresh overscroll bounce on the body */
+  overscroll-behavior: none;
+  background-color: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body,
+html.dark body {
+  background-color: #0e1621;
+  color: #f1f5f9;
+}
+
+/* thin scrollbars */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300 dark:bg-white/10;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropzone-active {
+  outline: 3px dashed rgb(99 102 241);
+  outline-offset: -6px;
+}
+
+/* Safe-area inset helpers for notched / home-indicator phones */
+.pb-safe  { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.mb-safe  { margin-bottom:  env(safe-area-inset-bottom, 0px); }
+.pt-safe  { padding-top:    env(safe-area-inset-top, 0px); }
+.pl-safe  { padding-left:   env(safe-area-inset-left, 0px); }
